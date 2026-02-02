@@ -25,7 +25,9 @@ NEZHA_KEY = os.environ.get('NEZHA_KEY', '')
 ARGO_DOMAIN = os.environ.get('ARGO_DOMAIN', '')       
 ARGO_AUTH = os.environ.get('ARGO_AUTH', '')            
 ARGO_PORT = int(os.environ.get('ARGO_PORT', '8080'))   
-                 
+CFIP = os.environ.get('CFIP', 'www.visa.com.tw')       
+CFPORT = int(os.environ.get('CFPORT', '443'))         
+NAME = os.environ.get('NAME', 'streamlit')                   
 CHAT_ID = os.environ.get('CHAT_ID', '')                
 dog_TOKEN = os.environ.get('dog_TOKEN', '')           
 PORT = int(os.environ.get('SERVER_PORT') or os.environ.get('PORT') or 3000) 
@@ -49,6 +51,36 @@ list_path = os.path.join(FILE_PATH, 'list.txt')
 boot_log_path = os.path.join(FILE_PATH, 'boot.log')
 config_path = os.path.join(FILE_PATH, 'mouse.json')
 
+# Delete nodes
+def delete_nodes():
+    try:
+        if not UPLOAD_URL:
+            return
+
+        if not os.path.exists(sub_path):
+            return
+
+        try:
+            with open(sub_path, 'r') as file:
+                file_content = file.read()
+        except:
+            return None
+
+        decoded = base64.b64decode(file_content).decode('utf-8')
+        nodes = [line for line in decoded.split('\n') if any(protocol in line for protocol in ['vless://', 'vmess://', 'trojan://', 'hysteria2://', 'tuic://'])]
+
+        if not nodes:
+            return
+
+        try:
+            requests.post(f"{UPLOAD_URL}/api/delete-nodes", 
+                          data=json.dumps({"nodes": nodes}),
+                          headers={"Content-Type": "application/json"})
+        except:
+            return None
+    except Exception as e:
+        print(f"Error in delete_nodes: {e}")
+        return None
 
 # Clean up old files
 def cleanup_old_files():
@@ -151,6 +183,12 @@ def authorize_files(file_paths):
             except Exception as e:
                 print(f"Empowerment failed for {absolute_file_path}: {e}")
 
+# Configure Argo tunnel
+def argo_type():
+    if not ARGO_AUTH
+        print("ARGO_AUTH variable is empty")
+        return
+
 
 # Execute shell command and return output
 def exec_cmd(command):
@@ -227,21 +265,23 @@ async def download_files_and_run():
             print(f"Error executing command: {e}")
     
     time.sleep(5)
+    
+    
 
     
 # Main function to start the server
 async def start_server():
- 
+    delete_nodes()
     cleanup_old_files()
     create_directory()
-
+    argo_type()
     await download_files_and_run()
      
     server_thread = Thread(target=run_server)
     server_thread.daemon = True
     server_thread.start()   
     
-    
+     
 def run_server():
     server = HTTPServer(('0.0.0.0', PORT), RequestHandler)
     print(f"Server is running on port {PORT}")
