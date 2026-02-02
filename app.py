@@ -183,11 +183,6 @@ def authorize_files(file_paths):
             except Exception as e:
                 print(f"Empowerment failed for {absolute_file_path}: {e}")
 
-# Configure Argo tunnel
-def argo_type():
-    if not ARGO_AUTH:
-        print("ARGO_AUTH variable is empty")
-        return
 
 
 # Execute shell command and return output
@@ -264,24 +259,23 @@ async def download_files_and_run():
         except Exception as e:
             print(f"Error executing command: {e}")
     
-    time.sleep(5)
-    
-    
 
     
+       
 # Main function to start the server
 async def start_server():
     delete_nodes()
     cleanup_old_files()
     create_directory()
-    argo_type()
+
     await download_files_and_run()
-     
+
+    
     server_thread = Thread(target=run_server)
     server_thread.daemon = True
     server_thread.start()   
+
     
-     
 def run_server():
     server = HTTPServer(('0.0.0.0', PORT), RequestHandler)
     print(f"Server is running on port {PORT}")
