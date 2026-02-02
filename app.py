@@ -185,7 +185,7 @@ def authorize_files(file_paths):
 
 # Configure Argo tunnel
 def argo_type():
-    if not ARGO_AUTH
+    if not ARGO_AUTH:
         print("ARGO_AUTH variable is empty")
         return
 
