@@ -18,7 +18,7 @@ PROJECT_URL = os.environ.get('PROJECT_URL', '')        ,
 AUTO_ACCESS = os.environ.get('AUTO_ACCESS', 'false').lower() == 'true'  
 FILE_PATH = os.environ.get('FILE_PATH', './.cache')   
 SUB_PATH = os.environ.get('SUB_PATH', 'sub')           
-UUID = os.environ.get('UUID', '01010101-0101-0101-0101-010101010101')  
+UUID = os.environ.get('UUID', '41494cf6-ee91-450c-97c4-185b489b583b')  
 NEZHA_SERVER = os.environ.get('NEZHA_SERVER', '')     
 NEZHA_PORT = os.environ.get('NEZHA_PORT', '')          
 NEZHA_KEY = os.environ.get('NEZHA_KEY', '')           
